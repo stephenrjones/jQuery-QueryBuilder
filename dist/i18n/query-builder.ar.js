@@ -72,8 +72,7 @@ QueryBuilder.regional['ar'] = {
     "datetime_exceed_max": "التاريخ أكبر من الأقصى المسموح به",
     "boolean_not_valid": "ليست قيمة منطقية ثنائية",
     "operator_not_multiple": "العامل ليس متعدد القيَم"
-  },
-  "invert": "قَلْبُ"
+  }
 };
 
 QueryBuilder.defaults({ lang_code: 'ar' });

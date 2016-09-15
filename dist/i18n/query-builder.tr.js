@@ -72,8 +72,7 @@ QueryBuilder.regional['tr'] = {
     "datetime_exceed_max": "{0} Tarihinden daha öncesi olmalı.",
     "boolean_not_valid": "Değer Doğru/Yanlış(bool) olmalı",
     "operator_not_multiple": "Operatör {0} birden fazla değer kabul etmiyor"
-  },
-  "invert": "Ters Çevir"
+  }
 };
 
 QueryBuilder.defaults({ lang_code: 'tr' });

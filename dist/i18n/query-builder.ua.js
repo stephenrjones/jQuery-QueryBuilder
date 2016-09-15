@@ -71,8 +71,7 @@ QueryBuilder.regional['ua'] = {
     "datetime_exceed_max": "Повинне бути, до {0}",
     "boolean_not_valid": "Не логічне",
     "operator_not_multiple": "Оператор {0} не підтримує багато значень"
-  },
-  "invert": "інвертувати"
+  }
 };
 
 QueryBuilder.defaults({ lang_code: 'ua' });

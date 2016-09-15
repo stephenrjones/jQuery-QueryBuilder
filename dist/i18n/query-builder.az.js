@@ -71,8 +71,7 @@ QueryBuilder.regional['az'] = {
     "datetime_exceed_max": "{0} əvvəl olmalıdır",
     "boolean_not_valid": "Loqik olmayan",
     "operator_not_multiple": "{0} operatoru çoxlu məna daşımır"
-  },
-  "invert": "invert"
+  }
 };
 
 QueryBuilder.defaults({ lang_code: 'az' });

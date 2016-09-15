@@ -4,7 +4,7 @@
  * Licensed under MIT (http://opensource.org/licenses/MIT)
  */
 
-.query-builder .rules-group-container, .query-builder .rule-container, .query-builder .rule-placeholder {
+.query-builder .rules-group-container, .query-builder .rule-container {
   position: relative;
   margin: 4px 0;
   border-radius: 5px;
@@ -15,7 +15,7 @@
 
 .query-builder .rule-container .rule-filter-container,
 .query-builder .rule-container .rule-operator-container,
-.query-builder .rule-container .rule-value-container, .query-builder .error-container, .query-builder .drag-handle {
+.query-builder .rule-container .rule-value-container, .query-builder .error-container {
   display: inline-block;
   margin: 0 5px 0 0;
   vertical-align: middle;
@@ -94,35 +94,4 @@
 }
 .query-builder .rules-list > *:last-child::after {
   display: none;
-}
-
-.query-builder .error-container + .tooltip .tooltip-inner {
-  color: #F99 !important;
-}
-
-.query-builder p.filter-description {
-  margin: 5px 0 0 0;
-  background: #D9EDF7;
-  border: 1px solid #BCE8F1;
-  color: #31708F;
-  border-radius: 5px;
-  padding: 2.5px 5px;
-  font-size: .8em;
-}
-
-.query-builder .rules-group-header [data-invert] {
-  margin-left: 5px;
-}
-
-.query-builder .drag-handle {
-  cursor: move;
-  vertical-align: middle;
-  margin-left: 5px;
-}
-.query-builder .dragged {
-  opacity: .5;
-}
-.query-builder .rule-placeholder {
-  border: 1px dashed #BBB;
-  opacity: .7;
 }

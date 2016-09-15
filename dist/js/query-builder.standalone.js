@@ -1,126 +1,132 @@
 /*!
- * jQuery.extendext 0.1.1
+ * jQuery.extendext 0.1.2
  *
- * Copyright 2014 Damien "Mistic" Sorel (http://www.strangeplanet.fr)
+ * Copyright 2014-2016 Damien "Mistic" Sorel (http://www.strangeplanet.fr)
  * Licensed under MIT (http://opensource.org/licenses/MIT)
  * 
  * Based on jQuery.extend by jQuery Foundation, Inc. and other contributors
  */
 
-(function(root, factory) {
+(function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define('jQuery.extendext', ['jquery'], factory);
+    }
+    else if (typeof module === 'object' && module.exports) {
+        module.exports = factory(require('jquery'));
     }
     else {
         factory(root.jQuery);
     }
-}(this, function($) {
-  "use strict";
+}(this, function ($) {
+    "use strict";
 
-  $.extendext = function() {
-    var options, name, src, copy, copyIsArray, clone,
-      target = arguments[0] || {},
-      i = 1,
-      length = arguments.length,
-      deep = false,
-      arrayMode = 'default';
+    $.extendext = function () {
+        var options, name, src, copy, copyIsArray, clone,
+            target = arguments[0] || {},
+            i = 1,
+            length = arguments.length,
+            deep = false,
+            arrayMode = 'default';
 
-    // Handle a deep copy situation
-    if ( typeof target === "boolean" ) {
-      deep = target;
+        // Handle a deep copy situation
+        if (typeof target === "boolean") {
+            deep = target;
 
-      // Skip the boolean and the target
-      target = arguments[ i++ ] || {};
-    }
-
-    // Handle array mode parameter
-    if ( typeof target === "string" ) {
-      arrayMode = $([target.toLowerCase(), 'default']).filter(['default','concat','replace','extend'])[0];
-
-      // Skip the string param
-      target = arguments[ i++ ] || {};
-    }
-
-    // Handle case when target is a string or something (possible in deep copy)
-    if ( typeof target !== "object" && !$.isFunction(target) ) {
-      target = {};
-    }
-
-    // Extend jQuery itself if only one argument is passed
-    if ( i === length ) {
-      target = this;
-      i--;
-    }
-
-    for ( ; i < length; i++ ) {
-      // Only deal with non-null/undefined values
-      if ( (options = arguments[ i ]) !== null ) {
-        // Special operations for arrays
-        if ($.isArray(options) && arrayMode !== 'default') {
-          clone = target && $.isArray(target) ? target : [];
-
-          switch (arrayMode) {
-          case 'concat':
-            target = clone.concat( $.extend( deep, [], options ) );
-            break;
-
-          case 'replace':
-            target = $.extend( deep, [], options );
-            break;
-
-          case 'extend':
-            options.forEach(function(e, i) {
-              if (typeof e === 'object') {
-                var type = $.isArray(e) ? [] : {};
-                clone[i] = $.extendext( deep, arrayMode, clone[i] || type, e );
-
-              } else if (clone.indexOf(e) === -1) {
-                clone.push(e);
-              }
-            });
-
-            target = clone;
-            break;
-          }
-
-        } else {
-          // Extend the base object
-          for ( name in options ) {
-            src = target[ name ];
-            copy = options[ name ];
-
-            // Prevent never-ending loop
-            if ( target === copy ) {
-              continue;
-            }
-
-            // Recurse if we're merging plain objects or arrays
-            if ( deep && copy && ( $.isPlainObject(copy) ||
-              (copyIsArray = $.isArray(copy)) ) ) {
-
-              if ( copyIsArray ) {
-                copyIsArray = false;
-                clone = src && $.isArray(src) ? src : [];
-
-              } else {
-                clone = src && $.isPlainObject(src) ? src : {};
-              }
-
-              // Never move original objects, clone them
-              target[ name ] = $.extendext( deep, arrayMode, clone, copy );
-
-            // Don't bring in undefined values
-            } else if ( copy !== undefined ) {
-              target[ name ] = copy;
-            }
-          }
+            // Skip the boolean and the target
+            target = arguments[i++] || {};
         }
-      }
-    }
 
-    // Return the modified object
-    return target;
-  };
+        // Handle array mode parameter
+        if (typeof target === "string") {
+            arrayMode = target.toLowerCase();
+            if (arrayMode !== 'concat' && arrayMode !== 'replace' && arrayMode !== 'extend') {
+                arrayMode = 'default';
+            }
+
+            // Skip the string param
+            target = arguments[i++] || {};
+        }
+
+        // Handle case when target is a string or something (possible in deep copy)
+        if (typeof target !== "object" && !$.isFunction(target)) {
+            target = {};
+        }
+
+        // Extend jQuery itself if only one argument is passed
+        if (i === length) {
+            target = this;
+            i--;
+        }
+
+        for (; i < length; i++) {
+            // Only deal with non-null/undefined values
+            if ((options = arguments[i]) !== null) {
+                // Special operations for arrays
+                if ($.isArray(options) && arrayMode !== 'default') {
+                    clone = target && $.isArray(target) ? target : [];
+
+                    switch (arrayMode) {
+                    case 'concat':
+                        target = clone.concat($.extend(deep, [], options));
+                        break;
+
+                    case 'replace':
+                        target = $.extend(deep, [], options);
+                        break;
+
+                    case 'extend':
+                        options.forEach(function (e, i) {
+                            if (typeof e === 'object') {
+                                var type = $.isArray(e) ? [] : {};
+                                clone[i] = $.extendext(deep, arrayMode, clone[i] || type, e);
+
+                            } else if (clone.indexOf(e) === -1) {
+                                clone.push(e);
+                            }
+                        });
+
+                        target = clone;
+                        break;
+                    }
+
+                } else {
+                    // Extend the base object
+                    for (name in options) {
+                        src = target[name];
+                        copy = options[name];
+
+                        // Prevent never-ending loop
+                        if (target === copy) {
+                            continue;
+                        }
+
+                        // Recurse if we're merging plain objects or arrays
+                        if (deep && copy && ( $.isPlainObject(copy) ||
+                            (copyIsArray = $.isArray(copy)) )) {
+
+                            if (copyIsArray) {
+                                copyIsArray = false;
+                                clone = src && $.isArray(src) ? src : [];
+
+                            } else {
+                                clone = src && $.isPlainObject(src) ? src : {};
+                            }
+
+                            // Never move original objects, clone them
+                            target[name] = $.extendext(deep, arrayMode, clone, copy);
+
+                            // Don't bring in undefined values
+                        } else if (copy !== undefined) {
+                            target[name] = copy;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Return the modified object
+        return target;
+    };
 }));
 
 // doT.js
@@ -272,7 +278,7 @@
  */
 
 // Languages: en
-// Plugins: bt-checkbox, bt-selectpicker, bt-tooltip-errors, change-filters, filter-description, invert, mongodb-support, sortable, sql-support, unique-filter
+// Plugins: ogc-filter, sql-support
 (function(root, factory) {
     if (typeof define == 'function' && define.amd) {
         define('query-builder', ['jquery', 'doT', 'jQuery.extendext'], factory);
@@ -540,6 +546,8 @@ QueryBuilder.DEFAULTS = {
 
     default_group_flags: {
         condition_readonly: false,
+        no_add_rule: false,
+        no_add_group: false,
         no_delete: false
     },
 
@@ -1096,7 +1104,10 @@ QueryBuilder.prototype.addRule = function(parent, data, flags) {
     this.createRuleFilters(model);
 
     if (this.settings.default_filter || !this.settings.display_empty_filter) {
-        model.filter = this.getFilterById(this.settings.default_filter || this.filters[0].id);
+        model.filter = this.change('getDefaultFilter',
+            this.getFilterById(this.settings.default_filter || this.filters[0].id),
+            model
+        );
     }
 
     return model;
@@ -1293,6 +1304,12 @@ QueryBuilder.prototype.applyGroupFlags = function(group) {
     if (flags.condition_readonly) {
         group.$el.find('>' + Selectors.group_condition).prop('disabled', true)
             .parent().addClass('readonly');
+    }
+    if (flags.no_add_rule) {
+        group.$el.find(Selectors.add_rule).remove();
+    }
+    if (flags.no_add_group) {
+        group.$el.find(Selectors.add_group).remove();
     }
     if (flags.no_delete) {
         group.$el.find(Selectors.delete_group).remove();
@@ -1604,7 +1621,8 @@ QueryBuilder.prototype.setRules = function(data) {
 
         data.rules.forEach(function(item) {
             var model;
-            if (item.rules && item.rules.length > 0) {
+
+            if (item.rules !== undefined) {
                 if (self.settings.allow_groups !== -1 && self.settings.allow_groups < group.level) {
                     self.reset();
                     Utils.error('RulesParse', 'No more than {0} groups are allowed', self.settings.allow_groups);
@@ -1619,11 +1637,13 @@ QueryBuilder.prototype.setRules = function(data) {
                 }
             }
             else {
-                if (item.id === undefined) {
-                    Utils.error('RulesParse', 'Missing rule field id');
-                }
-                if (item.operator === undefined) {
-                    item.operator = 'equal';
+                if (!item.empty) {
+                    if (item.id === undefined) {
+                        Utils.error('RulesParse', 'Missing rule field id');
+                    }
+                    if (item.operator === undefined) {
+                        item.operator = 'equal';
+                    }
                 }
 
                 model = self.addRule(group, item.data);
@@ -1631,13 +1651,16 @@ QueryBuilder.prototype.setRules = function(data) {
                     return;
                 }
 
-                model.filter = self.getFilterById(item.id);
-                model.operator = self.getOperatorByType(item.operator);
-                model.flags = self.parseRuleFlags(item);
+                if (!item.empty) {
+                    model.filter = self.getFilterById(item.id);
+                    model.operator = self.getOperatorByType(item.operator);
 
-                if (model.operator.nb_inputs !== 0 && item.value !== undefined) {
-                    model.value = item.value;
+                    if (model.operator.nb_inputs !== 0 && item.value !== undefined) {
+                        model.value = item.value;
+                    }
                 }
+
+                model.flags = self.parseRuleFlags(item);
             }
         });
 
@@ -2104,6 +2127,8 @@ QueryBuilder.prototype.parseGroupFlags = function(group) {
     if (group.readonly) {
         $.extend(flags, {
             condition_readonly: true,
+            no_add_rule: true,
+            no_add_group: true,
             no_delete: true
         });
     }
@@ -2216,8 +2241,13 @@ QueryBuilder.templates.filterSelect = '\
 </select>';
 
 QueryBuilder.templates.operatorSelect = '\
+{{? it.operators.length === 1 }} \
+<span> \
+{{= it.lang.operators[it.operators[0].type] || it.operators[0].type }} \
+</span> \
+{{?}} \
 {{ var optgroup = null; }} \
-<select class="form-control" name="{{= it.rule.id }}_operator"> \
+<select class="form-control {{? it.operators.length === 1 }}hide{{?}}" name="{{= it.rule.id }}_operator"> \
   {{~ it.operators: operator }} \
     {{? optgroup !== operator.optgroup }} \
       {{? optgroup !== null }}</optgroup>{{?}} \
@@ -2580,7 +2610,7 @@ Node.prototype.moveAtEnd = function(target) {
         target = this.parent;
     }
 
-    this._move(target, target.length() - 1);
+    this._move(target, target.length() === 0 ? 0 : target.length() - 1);
 
     return this;
 };
@@ -3002,608 +3032,74 @@ $.fn.queryBuilder.regional = QueryBuilder.regional;
 
 
 /*!
- * jQuery QueryBuilder Awesome Bootstrap Checkbox
- * Applies Awesome Bootstrap Checkbox for checkbox and radio inputs.
- */
-
-QueryBuilder.define('bt-checkbox', function(options) {
-    if (options.font == 'glyphicons') {
-        var injectCSS = document.createElement('style');
-        injectCSS.innerHTML = '\
-.checkbox input[type=checkbox]:checked + label:after { \
-    font-family: "Glyphicons Halflings"; \
-    content: "\\e013"; \
-} \
-.checkbox label:after { \
-    padding-left: 4px; \
-    padding-top: 2px; \
-    font-size: 9px; \
-}';
-        document.body.appendChild(injectCSS);
-    }
-
-    this.on('getRuleInput.filter', function(h, rule, name) {
-        var filter = rule.filter;
-
-        if ((filter.input === 'radio' || filter.input === 'checkbox') && !filter.plugin) {
-            h.value = '';
-
-            if (!filter.colors) {
-                filter.colors = {};
-            }
-            if (filter.color) {
-                filter.colors._def_ = filter.color;
-            }
-
-            var style = filter.vertical ? ' style="display:block"' : '';
-            var i = 0;
-
-            Utils.iterateOptions(filter.values, function(key, val) {
-                var color = filter.colors[key] || filter.colors._def_ || options.color;
-                var id = name + '_' + (i++);
-
-                h.value+= '\
-<div' + style + ' class="' + filter.input + ' ' + filter.input + '-' + color + '"> \
-  <input type="' + filter.input + '" name="' + name + '" id="' + id + '" value="' + key + '"> \
-  <label for="' + id + '">' + val + '</label> \
-</div>';
-            });
-        }
-    });
-}, {
-    font: 'glyphicons',
-    color: 'default'
-});
-
-
-/*!
- * jQuery QueryBuilder Bootstrap Selectpicker
- * Applies Bootstrap Select on filters and operators combo-boxes.
- */
-
-/**
- * @throws ConfigError
- */
-QueryBuilder.define('bt-selectpicker', function(options) {
-    if (!$.fn.selectpicker || !$.fn.selectpicker.Constructor) {
-        Utils.error('MissingLibrary', 'Bootstrap Select is required to use "bt-selectpicker" plugin. Get it here: http://silviomoreto.github.io/bootstrap-select');
-    }
-
-    // init selectpicker
-    this.on('afterCreateRuleFilters', function(e, rule) {
-        rule.$el.find(Selectors.rule_filter).removeClass('form-control').selectpicker(options);
-    });
-
-    this.on('afterCreateRuleOperators', function(e, rule) {
-        rule.$el.find(Selectors.rule_operator).removeClass('form-control').selectpicker(options);
-    });
-
-    // update selectpicker on change
-    this.on('afterUpdateRuleFilter', function(e, rule) {
-        rule.$el.find(Selectors.rule_filter).selectpicker('render');
-    });
-
-    this.on('afterUpdateRuleOperator', function(e, rule) {
-        rule.$el.find(Selectors.rule_operator).selectpicker('render');
-    });
-}, {
-    container: 'body',
-    style: 'btn-inverse btn-xs',
-    width: 'auto',
-    showIcon: false
-});
-
-
-/*!
- * jQuery QueryBuilder Bootstrap Tooltip errors
- * Applies Bootstrap Tooltips on validation error messages.
- */
-
-/**
- * @throws ConfigError
- */
-QueryBuilder.define('bt-tooltip-errors', function(options) {
-    if (!$.fn.tooltip || !$.fn.tooltip.Constructor || !$.fn.tooltip.Constructor.prototype.fixTitle) {
-        Utils.error('MissingLibrary', 'Bootstrap Tooltip is required to use "bt-tooltip-errors" plugin. Get it here: http://getbootstrap.com');
-    }
-
-    var self = this;
-
-    // add BT Tooltip data
-    this.on('getRuleTemplate.filter getGroupTemplate.filter', function(h) {
-        var $h = $(h.value);
-        $h.find(Selectors.error_container).attr('data-toggle', 'tooltip');
-        h.value = $h.prop('outerHTML');
-    });
-
-    // init/refresh tooltip when title changes
-    this.model.on('update', function(e, node, field) {
-        if (field == 'error' && self.settings.display_errors) {
-            node.$el.find(Selectors.error_container).eq(0)
-              .tooltip(options)
-              .tooltip('hide')
-              .tooltip('fixTitle');
-        }
-    });
-}, {
-    placement: 'right'
-});
-
-
-/*!
- * jQuery QueryBuilder Change Filters
- * Allows to change available filters after plugin initialization.
- */
-
-QueryBuilder.extend({
-    /**
-     * Change the filters of the builder
-     * @throws ChangeFilterError
-     * @param {boolean,optional} delete rules using old filters
-     * @param {object[]} new filters
-     */
-    setFilters: function(delete_orphans, filters) {
-        var self = this;
-
-        if (filters === undefined) {
-            filters = delete_orphans;
-            delete_orphans = false;
-        }
-
-        filters = this.checkFilters(filters);
-        filters = this.change('setFilters', filters);
-
-        var filtersIds = filters.map(function(filter) {
-            return filter.id;
-        });
-
-        // check for orphans
-        if (!delete_orphans) {
-            (function checkOrphans(node) {
-                node.each(
-                    function(rule) {
-                        if (rule.filter && filtersIds.indexOf(rule.filter.id) === -1) {
-                            Utils.error('ChangeFilter', 'A rule is using filter "{0}"', rule.filter.id);
-                        }
-                    },
-                    checkOrphans
-                );
-            }(this.model.root));
-        }
-
-        // replace filters
-        this.filters = filters;
-
-        // apply on existing DOM
-        (function updateBuilder(node) {
-            node.each(true,
-              function(rule) {
-                  if (rule.filter && filtersIds.indexOf(rule.filter.id) === -1) {
-                      rule.drop();
-                  }
-                  else {
-                      self.createRuleFilters(rule);
-
-                      rule.$el.find(Selectors.rule_filter).val(rule.filter ? rule.filter.id : '-1');
-                  }
-              },
-              updateBuilder
-            );
-        }(this.model.root));
-
-        // update plugins
-        if (this.settings.plugins) {
-            if (this.settings.plugins['unique-filter']) {
-                this.updateDisabledFilters();
-            }
-            if (this.settings.plugins['bt-selectpicker']) {
-                this.$el.find(Selectors.rule_filter).selectpicker('render');
-            }
-        }
-
-        // reset the default_filter if does not exist anymore
-        if (this.settings.default_filter) {
-            try {
-                this.getFilterById(this.settings.default_filter);
-            }
-            catch (e) {
-                this.settings.default_filter = null;
-            }
-        }
-
-        this.trigger('afterSetFilters', filters);
-    },
-
-    /**
-     * Adds a new filter to the builder
-     * @param {object|object[]} the new filter
-     * @param {mixed,optional} numeric index or '#start' or '#end'
-     */
-    addFilter: function(new_filters, position) {
-        if (position === undefined || position == '#end') {
-            position = this.filters.length;
-        }
-        else if (position == '#start') {
-            position = 0;
-        }
-
-        if (!$.isArray(new_filters)) {
-            new_filters = [new_filters];
-        }
-
-        var filters = $.extend(true, [], this.filters);
-
-        // numeric position
-        if (parseInt(position) == position) {
-            Array.prototype.splice.apply(filters, [position, 0].concat(new_filters));
-        }
-        else {
-            // after filter by its id
-            if (this.filters.some(function(filter, index) {
-                if (filter.id == position) {
-                    position = index + 1;
-                    return true;
-                }
-            })) {
-                Array.prototype.splice.apply(filters, [position, 0].concat(new_filters));
-            }
-            // defaults to end of list
-            else {
-                Array.prototype.push.apply(filters, new_filters);
-            }
-        }
-
-        this.setFilters(filters);
-    },
-
-    /**
-     * Removes a filter from the builder
-     * @param {string|string[]} the filter id
-     * @param {boolean,optional} delete rules using old filters
-     */
-    removeFilter: function(filter_ids, delete_orphans) {
-        var filters = $.extend(true, [], this.filters);
-        if (typeof filter_ids === 'string') {
-            filter_ids = [filter_ids];
-        }
-
-        filters = filters.filter(function(filter) {
-            return filter_ids.indexOf(filter.id) === -1;
-        });
-
-        this.setFilters(delete_orphans, filters);
-    }
-});
-
-
-/*!
- * jQuery QueryBuilder Filter Description
- * Provides three ways to display a description about a filter: inline, Bootsrap Popover or Bootbox.
- */
-
-/**
- * @throws ConfigError
- */
-QueryBuilder.define('filter-description', function(options) {
-    /**
-     * INLINE
-     */
-    if (options.mode === 'inline') {
-        this.on('afterUpdateRuleFilter', function(e, rule) {
-            var $p = rule.$el.find('p.filter-description');
-
-            if (!rule.filter || !rule.filter.description) {
-                $p.hide();
-            }
-            else {
-                if ($p.length === 0) {
-                    $p = $('<p class="filter-description"></p>');
-                    $p.appendTo(rule.$el);
-                }
-                else {
-                    $p.show();
-                }
-
-                $p.html('<i class="' + options.icon + '"></i> ' + rule.filter.description);
-            }
-        });
-    }
-    /**
-     * POPOVER
-     */
-    else if (options.mode === 'popover') {
-        if (!$.fn.popover || !$.fn.popover.Constructor || !$.fn.popover.Constructor.prototype.fixTitle) {
-            Utils.error('MissingLibrary', 'Bootstrap Popover is required to use "filter-description" plugin. Get it here: http://getbootstrap.com');
-        }
-
-        this.on('afterUpdateRuleFilter', function(e, rule) {
-            var $b = rule.$el.find('button.filter-description');
-
-            if (!rule.filter || !rule.filter.description) {
-                $b.hide();
-
-                if ($b.data('bs.popover')) {
-                    $b.popover('hide');
-                }
-            }
-            else {
-                if ($b.length === 0) {
-                    $b = $('<button type="button" class="btn btn-xs btn-info filter-description" data-toggle="popover"><i class="' + options.icon + '"></i></button>');
-                    $b.prependTo(rule.$el.find(Selectors.rule_actions));
-
-                    $b.popover({
-                        placement: 'left',
-                        container: 'body',
-                        html: true
-                    });
-
-                    $b.on('mouseout', function() {
-                        $b.popover('hide');
-                    });
-                }
-                else {
-                    $b.show();
-                }
-
-                $b.data('bs.popover').options.content = rule.filter.description;
-
-                if ($b.attr('aria-describedby')) {
-                    $b.popover('show');
-                }
-            }
-        });
-    }
-    /**
-     * BOOTBOX
-     */
-    else if (options.mode === 'bootbox') {
-        if (!('bootbox' in window)) {
-            Utils.error('MissingLibrary', 'Bootbox is required to use "filter-description" plugin. Get it here: http://bootboxjs.com');
-        }
-
-        this.on('afterUpdateRuleFilter', function(e, rule) {
-            var $b = rule.$el.find('button.filter-description');
-
-            if (!rule.filter || !rule.filter.description) {
-                $b.hide();
-            }
-            else {
-                if ($b.length === 0) {
-                    $b = $('<button type="button" class="btn btn-xs btn-info filter-description" data-toggle="bootbox"><i class="' + options.icon + '"></i></button>');
-                    $b.prependTo(rule.$el.find(Selectors.rule_actions));
-
-                    $b.on('click', function() {
-                        bootbox.alert($b.data('description'));
-                    });
-                }
-
-                $b.data('description', rule.filter.description);
-            }
-        });
-    }
-}, {
-    icon: 'glyphicon glyphicon-info-sign',
-    mode: 'popover'
-});
-
-
-/*!
- * jQuery QueryBuilder Invert
- * Allows to invert a rule operator, a group condition or the entire builder.
- */
-
-QueryBuilder.defaults({
-    operatorOpposites: {
-        'equal':            'not_equal',
-        'not_equal':        'equal',
-        'in':               'not_in',
-        'not_in':           'in',
-        'less':             'greater_or_equal',
-        'less_or_equal':    'greater',
-        'greater':          'less_or_equal',
-        'greater_or_equal': 'less',
-        'between':          'not_between',
-        'not_between':      'between',
-        'begins_with':      'not_begins_with',
-        'not_begins_with':  'begins_with',
-        'contains':         'not_contains',
-        'not_contains':     'contains',
-        'ends_with':        'not_ends_with',
-        'not_ends_with':    'ends_with',
-        'is_empty':         'is_not_empty',
-        'is_not_empty':     'is_empty',
-        'is_null':          'is_not_null',
-        'is_not_null':      'is_null'
-    },
-
-    conditionOpposites: {
-        'AND': 'OR',
-        'OR': 'AND'
-    }
-});
-
-QueryBuilder.define('invert', function(options) {
-    var self = this;
-
-    /**
-     * Bind events
-     */
-    this.on('afterInit', function() {
-        self.$el.on('click.queryBuilder', '[data-invert=group]', function() {
-            var $group = $(this).closest(Selectors.group_container);
-            self.invert(Model($group), options);
-        });
-
-        if (options.display_rules_button && options.invert_rules) {
-            self.$el.on('click.queryBuilder', '[data-invert=rule]', function() {
-                var $rule = $(this).closest(Selectors.rule_container);
-                self.invert(Model($rule), options);
-            });
-        }
-    });
-
-    /**
-     * Modify templates
-     */
-    this.on('getGroupTemplate.filter', function(h, level) {
-        var $h = $(h.value);
-        $h.find(Selectors.condition_container).after('<button type="button" class="btn btn-xs btn-default" data-invert="group"><i class="' + options.icon + '"></i> ' + self.lang.invert + '</button>');
-        h.value = $h.prop('outerHTML');
-    });
-
-    if (options.display_rules_button && options.invert_rules) {
-        this.on('getRuleTemplate.filter', function(h) {
-            var $h = $(h.value);
-            $h.find(Selectors.rule_actions).prepend('<button type="button" class="btn btn-xs btn-default" data-invert="rule"><i class="' + options.icon + '"></i> ' + self.lang.invert + '</button>');
-            h.value = $h.prop('outerHTML');
-        });
-    }
-}, {
-    icon: 'glyphicon glyphicon-random',
-    recursive: true,
-    invert_rules: true,
-    display_rules_button: false,
-    silent_fail: false
-});
-
-QueryBuilder.extend({
-    /**
-     * Invert a Group, a Rule or the whole builder
-     * @throws InvertConditionError, InvertOperatorError
-     * @param {Node,optional}
-     * @param {object,optional}
-     */
-    invert: function(node, options) {
-        if (!(node instanceof Node)) {
-            if (!this.model.root) return;
-            options = node;
-            node = this.model.root;
-        }
-
-        if (typeof options != 'object') options = {};
-        if (options.recursive === undefined) options.recursive = true;
-        if (options.invert_rules === undefined) options.invert_rules = true;
-        if (options.silent_fail === undefined) options.silent_fail = false;
-        if (options.trigger === undefined) options.trigger = true;
-
-        if (node instanceof Group) {
-            // invert group condition
-            if (this.settings.conditionOpposites[node.condition]) {
-                node.condition = this.settings.conditionOpposites[node.condition];
-            }
-            else if (!options.silent_fail) {
-                Utils.error('InvertCondition', 'Unknown inverse of condition "{0}"', node.condition);
-            }
-
-            // recursive call
-            if (options.recursive) {
-                var tempOpts = $.extend({}, options, { trigger: false });
-                node.each(function(rule) {
-                    if (options.invert_rules) {
-                        this.invert(rule, tempOpts);
-                    }
-                }, function(group) {
-                    this.invert(group, tempOpts);
-                }, this);
-            }
-        }
-        else if (node instanceof Rule) {
-            if (node.operator && !node.filter.no_invert) {
-                // invert rule operator
-                if (this.settings.operatorOpposites[node.operator.type]) {
-                    var invert = this.settings.operatorOpposites[node.operator.type];
-                    // check if the invert is "authorized"
-                    if (!node.filter.operators || node.filter.operators.indexOf(invert) != -1) {
-                        node.operator = this.getOperatorByType(invert);
-                    }
-                }
-                else if (!options.silent_fail) {
-                    Utils.error('InvertOperator', 'Unknown inverse of operator "{0}"', node.operator.type);
-                }
-            }
-        }
-
-        if (options.trigger) {
-            this.trigger('afterInvert', node, options);
-        }
-    }
-});
-
-
-/*!
- * jQuery QueryBuilder MongoDB Support
- * Allows to export rules as a MongoDB find object as well as populating the builder from a MongoDB object.
+ * jQuery QueryBuilder OGC Filter Support
+ * Allows to export rules as a SQL WHERE statement as well as populating the builder from an SQL query.
  */
 
 // DEFAULT CONFIG
 // ===============================
 QueryBuilder.defaults({
-    mongoOperators: {
-        equal:            function(v) { return v[0]; },
-        not_equal:        function(v) { return { '$ne': v[0] }; },
-        in:               function(v) { return { '$in': v }; },
-        not_in:           function(v) { return { '$nin': v }; },
-        less:             function(v) { return { '$lt': v[0] }; },
-        less_or_equal:    function(v) { return { '$lte': v[0] }; },
-        greater:          function(v) { return { '$gt': v[0] }; },
-        greater_or_equal: function(v) { return { '$gte': v[0] }; },
-        between:          function(v) { return { '$gte': v[0], '$lte': v[1] }; },
-        not_between:      function(v) { return { '$lt': v[0], '$gt': v[1] }; },
-        begins_with:      function(v) { return { '$regex': '^' + Utils.escapeRegExp(v[0]) }; },
-        not_begins_with:  function(v) { return { '$regex': '^(?!' + Utils.escapeRegExp(v[0]) + ')' }; },
-        contains:         function(v) { return { '$regex': Utils.escapeRegExp(v[0]) }; },
-        not_contains:     function(v) { return { '$regex': '^((?!' + Utils.escapeRegExp(v[0]) + ').)*$', '$options': 's' }; },
-        ends_with:        function(v) { return { '$regex': Utils.escapeRegExp(v[0]) + '$' }; },
-        not_ends_with:    function(v) { return { '$regex': '(?<!' + Utils.escapeRegExp(v[0]) + ')$' }; },
-        is_empty:         function(v) { return ''; },
-        is_not_empty:     function(v) { return { '$ne': '' }; },
-        is_null:          function(v) { return null; },
-        is_not_null:      function(v) { return { '$ne': null }; }
+    /* operators for internal -> SQL conversion */
+    filterOperators: {
+        equal:            { op: 'ogc:PropertyIsEqualTo' },
+        not_equal:        { op: 'ogc:PropertyIsNotEqualTo' },
+        less:             { op: 'ogc:PropertyIsLessThan' },
+        less_or_equal:    { op: 'ogc:PropertyIsLessThanOrEqualTo' },
+        greater:          { op: 'ogc:PropertyIsGreaterThan' },
+        greater_or_equal: { op: 'ogc:PropertyIsLessThanOrEqualTo' },
+        between:          { op: 'ogc:PropertyIsBetween',      sep: 'And' },
+        is_null:          { op: 'ogc:PropertyIsNull' }
+
     },
 
-    mongoRuleOperators: {
-        $ne: function(v) {
-            v = v.$ne;
+
+    /* statements for internal -> SQL conversion */
+    filterStatements: {
+        'question_mark': function() {
+            var params = [];
             return {
-                'val': v,
-                'op': v === null ? 'is_not_null' : (v === '' ? 'is_not_empty' : 'not_equal')
+                add: function(rule, value) {
+                    params.push(value);
+                    return '?';
+                },
+                run: function() {
+                    return params;
+                }
             };
         },
-        eq: function(v) {
+
+        'numbered': function(char) {
+            if (!char || char.length > 1) char = '$';
+            var index = 0;
+            var params = [];
             return {
-                'val': v,
-                'op': v === null ? 'is_null' : (v === '' ? 'is_empty' : 'equal')
+                add: function(rule, value) {
+                    params.push(value);
+                    index++;
+                    return char + index;
+                },
+                run: function() {
+                    return params;
+                }
             };
         },
-        $regex: function(v) {
-            v = v.$regex;
-            if (v.slice(0, 4) == '^(?!' && v.slice(-1) == ')') {
-                return { 'val': v.slice(4, -1), 'op': 'not_begins_with' };
-            }
-            else if (v.slice(0, 5) == '^((?!' && v.slice(-5) == ').)*$') {
-                return { 'val': v.slice(5, -5), 'op': 'not_contains' };
-            }
-            else if (v.slice(0, 4) == '(?<!' && v.slice(-2) == ')$') {
-                return { 'val': v.slice(4, -2), 'op': 'not_ends_with' };
-            }
-            else if (v.slice(-1) == '$') {
-                return { 'val': v.slice(0, -1), 'op': 'ends_with' };
-            }
-            else if (v.slice(0, 1) == '^') {
-                return { 'val': v.slice(1), 'op': 'begins_with' };
-            }
-            else {
-                return { 'val': v, 'op': 'contains' };
-            }
-        },
-        between:     function(v) { return { 'val': [v.$gte, v.$lte], 'op': 'between' }; },
-        not_between: function(v) { return { 'val': [v.$lt, v.$gt], 'op': 'not_between' }; },
-        $in:  function(v) { return { 'val': v.$in, 'op': 'in' }; },
-        $nin: function(v) { return { 'val': v.$nin, 'op': 'not_in' }; },
-        $lt:  function(v) { return { 'val': v.$lt, 'op': 'less' }; },
-        $lte: function(v) { return { 'val': v.$lte, 'op': 'less_or_equal' }; },
-        $gt:  function(v) { return { 'val': v.$gt, 'op': 'greater' }; },
-        $gte: function(v) { return { 'val': v.$gte, 'op': 'greater_or_equal' }; }
+
+        'named': function(char) {
+            if (!char || char.length > 1) char = ':';
+            var indexes = {};
+            var params = {};
+            return {
+                add: function(rule, value) {
+                    if (!indexes[rule.field]) indexes[rule.field] = 1;
+                    var key = rule.field + '_' + (indexes[rule.field]++);
+                    params[key] = value;
+                    return char + key;
+                },
+                run: function() {
+                    return params;
+                }
+            };
+        }
     }
 });
 
@@ -3612,349 +3108,96 @@ QueryBuilder.defaults({
 // ===============================
 QueryBuilder.extend({
     /**
-     * Get rules as MongoDB query
-     * @throws UndefinedMongoConditionError, UndefinedMongoOperatorError
+     * Get rules as Filter query
+     * @throws UndefinedFilterConditionError, UndefinedFilterOperatorError
      * @param data {object} (optional) rules
      * @return {object}
      */
-    getMongo: function(data) {
+    getFilter: function(data) {
         data = (data === undefined) ? this.getRules() : data;
+        var nl = '\n';
 
         var self = this;
 
-        return (function parse(data) {
+        var filterXML = (function parse(data) {
+            var parts = [];
+
             if (!data.condition) {
                 data.condition = self.settings.default_condition;
             }
             if (['AND', 'OR'].indexOf(data.condition.toUpperCase()) === -1) {
-                Utils.error('UndefinedMongoCondition', 'Unable to build MongoDB query with condition "{0}"', data.condition);
+                Utils.error('UndefinedSQLCondition', 'Unable to build SQL query with condition "{0}"', data.condition);
             }
 
             if (!data.rules) {
-                return {};
+                return '';
             }
 
-            var parts = [];
+            parts.push('<ogc:Filter>');
+            if (data.condition.toUpperCase() === 'OR') {
+                parts.push('<ogc:Or>');
+            } else {
+                parts.push('<ogc:And>');
+            }
+
 
             data.rules.forEach(function(rule) {
-                if (rule.rules && rule.rules.length > 0) {
-                    parts.push(parse(rule));
-                }
-                else {
-                    var mdb = self.settings.mongoOperators[rule.operator];
-                    var ope = self.getOperatorByType(rule.operator);
-                    var values = [];
 
-                    if (mdb === undefined) {
-                        Utils.error('UndefinedMongoOperator', 'Unknown MongoDB operation for operator "{0}"', rule.operator);
+                var filterCmd = self.settings.filterOperators[rule.operator];
+                var value = '';
+
+                if (filterCmd === undefined) {
+                    Utils.error('UndefinedFilterOperator', 'Unknown Filter operation for operator "{0}"', rule.operator);
+                }
+
+/*                rule.value.forEach(function(v, i) {
+                    if (i > 0) {
+                        value += sql.sep;
                     }
 
-                    if (ope.nb_inputs !== 0) {
-                        if (!(rule.value instanceof Array)) {
-                            rule.value = [rule.value];
+                    if (rule.type == 'integer' || rule.type == 'double' || rule.type == 'boolean') {
+                        v = Utils.changeType(v, rule.type, true);
+                    }
+                    else if (!stmt) {
+                        v = Utils.escapeString(v);
+                    }
+
+                    else {
+                        if (typeof v == 'string') {
+                            v = '\'' + v + '\'';
                         }
 
-                        rule.value.forEach(function(v) {
-                            values.push(Utils.changeType(v, rule.type, false));
-                        });
+                        value += v;
                     }
+                });*/
 
-                    var part = {};
-                    part[rule.field] = mdb.call(self, values);
-                    parts.push(part);
-                }
+                parts.push('<' + filterCmd.op + '>' + nl);
+                parts.push('<ogc:PropertyName>' + rule.field + '</ogc:PropertyName>' + nl);
+                parts.push('<ogc:Literal>' + rule.value + '</ogc:Literal>' + nl);
+                parts.push('</' + filterCmd.op + '>' + nl);
+
             });
 
-            var res = {};
-            if (parts.length > 0) {
-                res['$' + data.condition.toLowerCase()] = parts;
+            if (data.condition.toUpperCase() === 'OR') {
+                parts.push('</ogc:Or>');
+            } else {
+                parts.push('</ogc:And>');
             }
-            return res;
+            parts.push('</ogc:Filter>')
+
+            return parts.join(' ');
         }(data));
-    },
 
-    /**
-     * Convert MongoDB object to rules
-     * @throws MongoParseError, UndefinedMongoConditionError, UndefinedMongoOperatorError
-     * @param data {object} query object
-     * @return {object}
-     */
-    getRulesFromMongo: function(data) {
-        if (data === undefined || data === null) {
-            return null;
-        }
-
-        var self = this;
-        var conditions = {
-            '$and': 'AND',
-            '$or': 'OR'
+        return {
+            filter: filterXML
         };
-
-        return (function parse(data) {
-            var topKeys = Object.keys(data);
-
-            if (topKeys.length > 1) {
-                Utils.error('MongoParse', 'Invalid MongoDB query format');
-            }
-            if (!conditions[topKeys[0].toLowerCase()]) {
-                Utils.error('UndefinedMongoCondition', 'Unable to build MongoDB query with condition "{0}"', topKeys[0]);
-            }
-
-            var rules = data[topKeys[0]];
-            var parts = [];
-
-            rules.forEach(function(rule) {
-                var keys = Object.keys(rule);
-
-                if (conditions[keys[0].toLowerCase()]) {
-                    parts.push(parse(rule));
-                }
-                else {
-                    var field = keys[0];
-                    var value = rule[field];
-
-                    var operator = determineMongoOperator(value, field);
-                    if (operator === undefined) {
-                        Utils.error('MongoParse', 'Invalid MongoDB query format');
-                    }
-
-                    var mdbrl = self.settings.mongoRuleOperators[operator];
-                    if (mdbrl === undefined) {
-                        Utils.error('UndefinedMongoOperator', 'JSON Rule operation unknown for operator "{0}"', operator);
-                    }
-
-                    var opVal = mdbrl.call(self, value);
-                    parts.push({
-                        id: self.change('getMongoDBFieldID', field, value),
-                        field: field,
-                        operator: opVal.op,
-                        value: opVal.val
-                    });
-                }
-            });
-
-            var res = {};
-            if (parts.length > 0) {
-                res.condition = conditions[topKeys[0].toLowerCase()];
-                res.rules = parts;
-            }
-            return res;
-        }(data));
-    },
-
-    /**
-     * Set rules from MongoDB object
-     * @param data {object}
-     */
-    setRulesFromMongo: function(data) {
-        this.setRules(this.getRulesFromMongo(data));
     }
 });
 
-/**
- * Find which operator is used in a MongoDB sub-object
- * @param {mixed} value
- * @param {string} field
- * @return {string|undefined}
- */
-function determineMongoOperator(value, field) {
-    if (value !== null && typeof value == 'object') {
-        var subkeys = Object.keys(value);
-
-        if (subkeys.length === 1) {
-            return subkeys[0];
-        }
-        else {
-            if (value.$gte !== undefined && value.$lte !== undefined) {
-                return 'between';
-            }
-            if (value.$lt !== undefined && value.$gt !== undefined) {
-                return 'not_between';
-            }
-            else if (value.$regex !== undefined) { // optional $options
-                return '$regex';
-            }
-            else {
-                return;
-            }
-        }
-    }
-    else {
-        return 'eq';
-    }
-}
-
-
-/*!
- * jQuery QueryBuilder Sortable
- * Enables drag & drop sort of rules.
- */
-
-Selectors.rule_and_group_containers = Selectors.rule_container + ', ' + Selectors.group_container;
-
-QueryBuilder.define('sortable', function(options) {
-    /**
-     * Init HTML5 drag and drop
-     */
-    this.on('afterInit', function(e) {
-        // configure jQuery to use dataTransfer
-        $.event.props.push('dataTransfer');
-
-        var placeholder;
-        var src;
-        var self = e.builder;
-
-        // only add "draggable" attribute when hovering drag handle
-        // preventing text select bug in Firefox
-        self.$el.on('mouseover.queryBuilder', '.drag-handle', function() {
-            self.$el.find(Selectors.rule_and_group_containers).attr('draggable', true);
-        });
-        self.$el.on('mouseout.queryBuilder', '.drag-handle', function() {
-            self.$el.find(Selectors.rule_and_group_containers).removeAttr('draggable');
-        });
-
-        // dragstart: create placeholder and hide current element
-        self.$el.on('dragstart.queryBuilder', '[draggable]', function(e) {
-            e.stopPropagation();
-
-            // notify drag and drop (only dummy text)
-            e.dataTransfer.setData('text', 'drag');
-
-            src = Model(e.target);
-
-            // Chrome glitchs
-            // - helper invisible if hidden immediately
-            // - "dragend" is called immediately if we modify the DOM directly
-            setTimeout(function() {
-                var ph = $('<div class="rule-placeholder">&nbsp;</div>');
-                ph.css('min-height', src.$el.height());
-
-                placeholder = src.parent.addRule(ph, src.getPos());
-
-                src.$el.hide();
-            }, 0);
-        });
-
-        // dragenter: move the placeholder
-        self.$el.on('dragenter.queryBuilder', '[draggable]', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            if (placeholder) {
-                moveSortableToTarget(placeholder, $(e.target));
-            }
-        });
-
-        // dragover: prevent glitches
-        self.$el.on('dragover.queryBuilder', '[draggable]', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        });
-
-        // drop: move current element
-        self.$el.on('drop.queryBuilder', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            moveSortableToTarget(src, $(e.target));
-        });
-
-        // dragend: show current element and delete placeholder
-        self.$el.on('dragend.queryBuilder', '[draggable]', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            src.$el.show();
-            placeholder.drop();
-
-            self.$el.find(Selectors.rule_and_group_containers).removeAttr('draggable');
-
-            self.trigger('afterMove', src);
-
-            src = placeholder = null;
-        });
-    });
-
-    /**
-     * Remove drag handle from non-sortable rules
-     */
-    this.on('parseRuleFlags.filter', function(flags) {
-        if (flags.value.no_sortable === undefined) {
-            flags.value.no_sortable = options.default_no_sortable;
-        }
-    });
-
-    this.on('afterApplyRuleFlags', function(e, rule) {
-        if (rule.flags.no_sortable) {
-            rule.$el.find('.drag-handle').remove();
-        }
-    });
-
-    /**
-     * Remove drag handle from non-sortable groups
-     */
-    this.on('parseGroupFlags.filter', function(flags) {
-        if (flags.value.no_sortable === undefined) {
-            flags.value.no_sortable = options.default_no_sortable;
-        }
-    });
-
-    this.on('afterApplyGroupFlags', function(e, group) {
-        if (group.flags.no_sortable) {
-            group.$el.find('.drag-handle').remove();
-        }
-    });
-
-    /**
-     * Modify templates
-     */
-    this.on('getGroupTemplate.filter', function(h, level) {
-        if (level > 1) {
-            var $h = $(h.value);
-            $h.find(Selectors.condition_container).after('<div class="drag-handle"><i class="' + options.icon + '"></i></div>');
-            h.value = $h.prop('outerHTML');
-        }
-    });
-
-    this.on('getRuleTemplate.filter', function(h) {
-        var $h = $(h.value);
-        $h.find(Selectors.rule_header).after('<div class="drag-handle"><i class="' + options.icon + '"></i></div>');
-        h.value = $h.prop('outerHTML');
-    });
-}, {
-    default_no_sortable: false,
-    icon: 'glyphicon glyphicon-sort'
-});
-
-/**
- * Move an element (placeholder or actual object) depending on active target
- * @param {Node}
- * @param {jQuery}
- */
-function moveSortableToTarget(element, target) {
-    var parent;
-
-    // on rule
-    parent = target.closest(Selectors.rule_container);
-    if (parent.length) {
-        element.moveAfter(Model(parent));
-        return;
-    }
-
-    // on group header
-    parent = target.closest(Selectors.group_header);
-    if (parent.length) {
-        parent = target.closest(Selectors.group_container);
-        element.moveAtBegin(Model(parent));
-        return;
-    }
-
-    // on group
-    parent = target.closest(Selectors.group_container);
-    if (parent.length) {
-        element.moveAtEnd(Model(parent));
-        return;
-    }
+function getStmtConfig(stmt) {
+    var config = stmt.match(/(question_mark|numbered|named)(?:\((.)\))?/);
+    if (!config) config = [null, 'question_mark', undefined];
+    return config;
 }
 
 
@@ -4395,86 +3638,6 @@ function getStmtConfig(stmt) {
 
 
 /*!
- * jQuery QueryBuilder Unique Filter
- * Allows to define some filters as "unique": ie which can be used for only one rule, globally or in the same group.
- */
-
-QueryBuilder.define('unique-filter', function() {
-    this.status.used_filters = {};
-
-    this.on('afterUpdateRuleFilter', this.updateDisabledFilters);
-    this.on('afterDeleteRule', this.updateDisabledFilters);
-    this.on('afterCreateRuleFilters', this.applyDisabledFilters);
-    this.on('afterReset', this.clearDisabledFilters);
-    this.on('afterClear', this.clearDisabledFilters);
-});
-
-QueryBuilder.extend({
-    updateDisabledFilters: function(e) {
-        var self = e ? e.builder : this;
-
-        self.status.used_filters = {};
-
-        if (!self.model) {
-            return;
-        }
-
-        // get used filters
-        (function walk(group) {
-            group.each(function(rule) {
-                if (rule.filter && rule.filter.unique) {
-                    if (!self.status.used_filters[rule.filter.id]) {
-                        self.status.used_filters[rule.filter.id] = [];
-                    }
-                    if (rule.filter.unique == 'group') {
-                        self.status.used_filters[rule.filter.id].push(rule.parent);
-                    }
-                }
-            }, function(group) {
-                walk(group);
-            });
-        }(self.model.root));
-
-        self.applyDisabledFilters(e);
-    },
-
-    clearDisabledFilters: function(e) {
-        var self = e ? e.builder : this;
-
-        self.status.used_filters = {};
-
-        self.applyDisabledFilters(e);
-    },
-
-    applyDisabledFilters: function(e) {
-        var self = e ? e.builder : this;
-
-        // re-enable everything
-        self.$el.find(Selectors.filter_container + ' option').prop('disabled', false);
-
-        // disable some
-        $.each(self.status.used_filters, function(filterId, groups) {
-            if (groups.length === 0) {
-                self.$el.find(Selectors.filter_container + ' option[value="' + filterId + '"]:not(:selected)').prop('disabled', true);
-            }
-            else {
-                groups.forEach(function(group) {
-                    group.each(function(rule) {
-                        rule.$el.find(Selectors.filter_container + ' option[value="' + filterId + '"]:not(:selected)').prop('disabled', true);
-                    });
-                });
-            }
-        });
-
-        // update Selectpicker
-        if (self.settings.plugins && self.settings.plugins['bt-selectpicker']) {
-            self.$el.find(Selectors.rule_filter).selectpicker('render');
-        }
-    }
-});
-
-
-/*!
  * jQuery QueryBuilder 2.3.3
  * Locale: English (en)
  * Author: Damien "Mistic" Sorel, http://www.strangeplanet.fr
@@ -4536,8 +3699,7 @@ QueryBuilder.regional['en'] = {
     "datetime_exceed_max": "Must be before {0}",
     "boolean_not_valid": "Not a boolean",
     "operator_not_multiple": "Operator {0} cannot accept multiple values"
-  },
-  "invert": "Invert"
+  }
 };
 
 QueryBuilder.defaults({ lang_code: 'en' });

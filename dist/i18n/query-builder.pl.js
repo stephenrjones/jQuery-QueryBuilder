@@ -72,8 +72,7 @@ QueryBuilder.regional['pl'] = {
     "datetime_exceed_max": "Musi być przed {0}",
     "boolean_not_valid": "Niepoprawna wartość logiczna",
     "operator_not_multiple": "Operator {0} nie przyjmuje wielu wartości"
-  },
-  "invert": "Odwróć"
+  }
 };
 
 QueryBuilder.defaults({ lang_code: 'pl' });

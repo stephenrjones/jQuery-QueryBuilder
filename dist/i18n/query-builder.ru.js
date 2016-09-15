@@ -69,8 +69,7 @@ QueryBuilder.regional['ru'] = {
     "datetime_exceed_max": "Должно быть, до {0}",
     "boolean_not_valid": "Не логическое",
     "operator_not_multiple": "Оператор {0} не поддерживает много значений"
-  },
-  "invert": "Инвертировать"
+  }
 };
 
 QueryBuilder.defaults({ lang_code: 'ru' });
